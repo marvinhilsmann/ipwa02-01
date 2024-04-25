@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<HTML xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Ghost Net Fishing</title>
+</h:head>
+<h:body>
+	<h:form id="ghostNetForm">
+		<!-- script für Karte -->
+		<script src="https://maps.google.com/maps/api/js?key=AIzaSyCvCDkYieuUBmMWon_mfLAfjuaeuosuqow&amp;sensor=false"></script>
+		
+		<h1><h:outputText value="Geisternetze" /></h1>
+		
+		<div style="position:absolute; top:10px; right: 10px;">
+			<h:commandLink value="Abmelden" action="#{loginController.logout}" />
+		</div>
+		
+		<!-- Nur anzeigen, wenn wir Meldende Person sind -->
+		<ui:fragment rendered="#{netzController.benutzer.melder}">
+			<h2><h:outputText value="Neues Geisternetz erfassen:"/></h2>
+			<h:panelGrid columns="2">
+                <p:outputLabel for="inputLatitudinal" value="Breitengrad eingeben"/>
+                <p:inputNumber id="inputLatitudinal" value="#{netzController.newLat}" minValue="-90" maxValue="90" decimalPlaces="15" required="#{netzController.benutzer.melder}"/>
+				<p:outputLabel for="inputLongitudinal" value="Längengrad eingeben"/>
+                <p:inputNumber id="inputLongitudinal" value="#{netzController.newLong}" minValue="-180" maxValue="180" decimalPlaces="15" required="#{netzController.benutzer.melder}"/>
+                <p:outputLabel for="inputGroesse" value="(ungefähre) Größe eingeben"/>
+                <p:inputNumber id="inputGroesse" value="#{netzController.newGroesse}" minValue="0.01" decimalPlaces="2" required="#{netzController.benutzer.melder}"/>
+                <p /> <!-- Abstandshalter zur Tabelle -->
+			</h:panelGrid>
+            <!-- Klick hier zum Anlegen -->
+            <h:commandLink value="Neues Netz anlegen" action="#{netzController.createGhostNet}" />
+		</ui:fragment>
+		<!-- Übersichtstabelle -->
+		<p:dataTable id="netze" var="netz" value="#{netzController.netze}" sortMode="single">
+			<f:facet name="header">Übersicht der Geisternetze</f:facet>
+			<p:column id="lat" sortBy="#{netz.latitudinal}">
+				<f:facet name="header">Breitengrad</f:facet>
+				<h:outputText value="#{netz.latitudinal}" />
+			</p:column>
+			<p:column id="long" sortBy="#{netz.longitudinal}">
+				<f:facet name="header">Längengrad</f:facet>
+				<h:outputText value="#{netz.longitudinal}" />
+			</p:column>
+			<p:column id="status" sortBy="#{netz.status}">
+				<f:facet name="header">Status</f:facet>
+				<h:outputText value="#{netz.status}"/>
+			</p:column>
+			<p:column headerText="Bergung anmelden" id="zuweisen" rendered="#{netzController.benutzer.berger}">
+				<p:commandButton id="zuweisenButton" value="Bergung anmelden" disabled="#{not netzController.isBergenAnmeldenAllowed(netz)}"
+					actionListener="#{netzController.bergungAnmelden(netz)}" update="ghostNetForm"/>
+			</p:column>
+			<p:column headerText="Bergende Person" id="bergendePerson" rendered="#{netzController.benutzer.berger}" sortBy="#{netz.bergendePerson}">
+				<h:outputText value="#{netz.bergendePerson}" />
+			</p:column>
+			<p:column headerText="Netz bergen" id="bergen" rendered="#{netzController.benutzer.berger}" >	
+				<p:commandButton id="bergenButton" value="Netz bergen" disabled="#{not netzController.isBergenAllowed(netz)}"
+					actionListener="#{netzController.bergeNetz(netz)}" update="ghostNetForm"/>
+			</p:column>
+		</p:dataTable>
+		<!-- Karte -->
+		<div class="card">
+	    	<p:gmap id="map" center="53.59722066551625, 7.196490281545635" zoom="9" type="HYBRID" style="width:100%;height:500px"
+	    		model="#{netzController.ghostNetModel}" rendered="#{netzController.benutzer.berger}">
+	    		
+	    		<p:ajax event="overlaySelect" listener="#{netzController.onMarkerSelect}" />
+	
+	            <p:gmapInfoWindow id="infoWindow">
+	                <p:outputPanel style="text-align: center; display: block; margin: auto">
+	
+						<h:outputText value="#{netzController.currentMarker.title}" />
+						<p/>
+	                    <h:outputText value="#{netzController.currentMarker.latlng}" />
+	
+	                </p:outputPanel>
+	            </p:gmapInfoWindow>
+	    	</p:gmap>
+		</div>
+	</h:form>
+</h:body>
+</HTML>
