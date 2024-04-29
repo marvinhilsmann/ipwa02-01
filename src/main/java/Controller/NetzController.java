@@ -12,9 +12,9 @@ import org.primefaces.model.map.MapModel;
 import org.primefaces.model.map.Marker;
 
 import Definitions.DotDefinitions;
+import Definitions.NetzStatus;
 import ghostNets.GhostNet;
 import ghostNets.GhostNetFishing;
-import ghostNets.NetzStatus;
 import ghostNets.Person;
 import ghostNets.UserSession;
 import jakarta.annotation.PostConstruct;

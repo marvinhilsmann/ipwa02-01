@@ -1,7 +1,5 @@
 package Definitions;
 
-import ghostNets.NetzStatus;
-
 public class DotDefinitions {
 
 	static final String GEMELDET = "https://maps.google.com/mapfiles/ms/micons/red-dot.png";

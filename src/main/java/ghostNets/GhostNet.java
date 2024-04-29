@@ -2,6 +2,7 @@ package ghostNets;
 
 import java.math.BigDecimal;
 
+import Definitions.NetzStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

@@ -1,4 +1,4 @@
-package ghostNets;
+package Definitions;
 
 public enum NetzStatus {
 	GEMELDET,
